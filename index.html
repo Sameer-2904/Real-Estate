@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NESTORA — Find a Place Worth Coming Home To</title>
+<meta name="description" content="Explore exceptional homes, luxury properties and thoughtfully selected spaces with NESTORA.">
+<meta name="theme-color" content="#201E1B">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,380..600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<a href="#main" class="skip-link">Skip to content</a>
+
+<!-- ===================== LOADER ===================== -->
+<div id="loader" aria-hidden="true">
+  <div class="loader-mark">NESTORA</div>
+  <div class="loader-tag">FIND A PLACE WORTH COMING HOME TO</div>
+  <div class="loader-bar"><span id="loaderBarFill"></span></div>
+</div>
+
+<!-- ===================== CURSOR ===================== -->
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"><span class="cursor-label" id="cursorLabel"></span></div>
+
+<!-- ===================== TOASTS ===================== -->
+<div id="toast-stack" aria-live="polite"></div>
+
+<!-- ===================== NAVBAR ===================== -->
+<header id="navbar">
+  <div class="wrap nav-inner">
+    <a href="#hero" class="nav-logo magnetic" data-cursor="discover">NESTORA</a>
+    <nav aria-label="Primary">
+      <ul class="nav-links">
+        <li><a href="#discover">PROPERTIES</a></li>
+        <li><a href="#discover" data-nav-buy>BUY</a></li>
+        <li><a href="#discover" data-nav-rent>RENT</a></li>
+        <li><a href="#developments">NEW DEVELOPMENTS</a></li>
+        <li><a href="#agents">AGENTS</a></li>
+        <li><a href="#about">ABOUT</a></li>
+      </ul>
+    </nav>
+    <div class="nav-right">
+      <button class="btn btn-outline btn-sm magnetic" data-open-schedule data-cursor="discover">LIST PROPERTY</button>
+      <a href="#" class="nav-signin" data-cursor="discover">SIGN IN</a>
+      <button class="nav-saved-btn magnetic" id="navSavedBtn" data-cursor="discover">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6c-1.6-1.6-4.2-1.6-5.8 0L12 7.6l-3-3c-1.6-1.6-4.2-1.6-5.8 0-1.6 1.6-1.6 4.2 0 5.8L12 19l8.8-8.6c1.6-1.6 1.6-4.2 0-5.8z"/></svg>
+        <span>SAVED (<span id="savedCount">0</span>)</span>
+      </button>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <ul>
+    <li><a href="#discover">Properties</a></li>
+    <li><a href="#developments">Developments</a></li>
+    <li><a href="#agents">Agents</a></li>
+    <li><a href="#journal">Journal</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+  <div class="mm-cta">
+    <button class="btn btn-outline-light btn-sm" data-open-schedule>LIST PROPERTY</button>
+    <button class="btn btn-bronze btn-sm" id="mmSavedBtn">SAVED (<span id="savedCountMobile">0</span>)</button>
+  </div>
+</div>
+
+<main id="main">
+
+  <!-- ===================== HERO ===================== -->
+  <section id="hero">
+    <div class="hero-media" id="heroMedia">
+      <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2000&q=80" alt="A modern architectural residence at dusk, lit from within, framed by tall trees">
+      <div class="hero-grain"></div>
+    </div>
+    <div class="wrap hero-content">
+      <div class="hero-eyebrow"><span>A CONCEPT REAL ESTATE STUDIO</span></div>
+      <h1>
+        <span class="line"><span>FIND A PLACE</span></span>
+        <span class="line"><span>WORTH COMING</span></span>
+        <span class="line"><span>HOME TO.</span></span>
+      </h1>
+      <p class="hero-sub" id="heroSub">Exceptional homes, thoughtfully selected for the way you want to live.</p>
+      <div class="hero-ctas" id="heroCtas">
+        <button class="btn btn-primary magnetic" data-cursor="discover" data-scroll-to="#discover">EXPLORE PROPERTIES</button>
+        <button class="btn btn-outline-light magnetic" data-cursor="discover" data-open-schedule>LIST YOUR PROPERTY</button>
+      </div>
+    </div>
+    <div class="hero-scroll"><span class="line"></span>SCROLL</div>
+
+    <div class="search-panel">
+      <div class="search-panel-inner">
+        <div class="search-card">
+          <div class="eyebrow" style="margin:0;padding-top:22px;">SEARCH PROPERTIES</div>
+          <div class="search-tabs" role="tablist" aria-label="Listing type">
+            <button class="active" data-listing="buy" role="tab" aria-selected="true">BUY</button>
+            <button data-listing="rent" role="tab" aria-selected="false">RENT</button>
+            <button data-listing="new" role="tab" aria-selected="false">NEW PROJECTS</button>
+          </div>
+          <form class="search-fields" id="heroSearchForm">
+            <div class="search-field">
+              <label for="sLocation">LOCATION</label>
+              <select id="sLocation">
+                <option value="">Any location</option>
+                <option>Jaipur, Rajasthan</option>
+                <option>Goa</option>
+                <option>Mumbai</option>
+                <option>Gurugram</option>
+              </select>
+            </div>
+            <div class="search-field">
+              <label for="sType">PROPERTY TYPE</label>
+              <select id="sType">
+                <option value="">Any type</option>
+                <option>Villa</option>
+                <option>Apartment</option>
+                <option>Penthouse</option>
+              </select>
+            </div>
+            <div class="search-field">
+              <label for="sPrice">PRICE RANGE</label>
+              <select id="sPrice">
+                <option value="">Any budget</option>
+                <option value="0-20000000">Up to ₹2 Cr</option>
+                <option value="20000000-40000000">₹2 Cr – ₹4 Cr</option>
+                <option value="40000000-999999999">₹4 Cr +</option>
+              </select>
+            </div>
+            <div class="search-field">
+              <label for="sBeds">BEDROOMS</label>
+              <select id="sBeds">
+                <option value="">Any</option>
+                <option value="2">2+</option>
+                <option value="3">3+</option>
+                <option value="4">4+</option>
+              </select>
+            </div>
+            <button type="submit" class="search-go magnetic" data-cursor="discover">SEARCH</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FEATURED PROPERTIES ===================== -->
+  <section class="section" id="featured" style="padding-top:calc(clamp(64px,10vw,140px) + 90px);">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="kicker">CURATED SELECTION</span>
+          <h2 class="reveal">Selected Homes</h2>
+        </div>
+        <p class="reveal">Spaces with character, architecture and a story worth telling.</p>
+      </div>
+      <div class="grid-properties" id="featuredGrid"></div>
+    </div>
+  </section>
+
+  <!-- ===================== DISCOVER / SEARCH + FILTER ===================== -->
+  <section class="section" id="discover">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="kicker">FULL LISTING</span>
+          <h2 class="reveal">Every Home We Represent</h2>
+        </div>
+        <p class="reveal">Filter by location, budget and the details that matter to how you'll actually live.</p>
+      </div>
+
+      <div class="discover-toolbar">
+        <div class="discover-count"><b id="resultsCount">0</b> PROPERTIES FOUND</div>
+        <div class="discover-actions">
+          <button class="filter-toggle" id="filterToggleBtn" aria-expanded="false" aria-controls="filtersPanel">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="12" y1="18" x2="20" y2="18"/><circle cx="6" cy="12" r="1.6" fill="currentColor"/><circle cx="10" cy="18" r="1.6" fill="currentColor"/></svg>
+            FILTERS
+          </button>
+          <select class="sort-select" id="sortSelect" aria-label="Sort properties">
+            <option value="featured">Sort: Featured</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="newest">Newest</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filters-panel" id="filtersPanel">
+        <div class="filters-grid">
+          <div class="filter-group">
+            <label for="fLocation">Location</label>
+            <select id="fLocation">
+              <option value="">Any location</option>
+              <option>Jaipur, Rajasthan</option>
+              <option>Goa</option>
+              <option>Mumbai</option>
+              <option>Gurugram</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="fType">Property type</label>
+            <select id="fType">
+              <option value="">Any type</option>
+              <option>Villa</option>
+              <option>Apartment</option>
+              <option>Penthouse</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="fListing">Buy / Rent</label>
+            <select id="fListing">
+              <option value="">Both</option>
+              <option value="buy">Buy</option>
+              <option value="rent">Rent</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>Bedrooms</label>
+            <div class="chip-row" id="fBeds">
+              <button type="button" class="chip active" data-val="">Any</button>
+              <button type="button" class="chip" data-val="2">2+</button>
+              <button type="button" class="chip" data-val="3">3+</button>
+              <button type="button" class="chip" data-val="4">4+</button>
+              <button type="button" class="chip" data-val="5">5+</button>
+            </div>
+          </div>
+          <div class="filter-group">
+            <label>Min price (₹)</label>
+            <input type="number" id="fMinPrice" placeholder="e.g. 2000000">
+          </div>
+          <div class="filter-group">
+            <label>Max price (₹)</label>
+            <input type="number" id="fMaxPrice" placeholder="e.g. 60000000">
+          </div>
+          <div class="filter-group">
+            <label>Bathrooms</label>
+            <div class="chip-row" id="fBaths">
+              <button type="button" class="chip active" data-val="">Any</button>
+              <button type="button" class="chip" data-val="2">2+</button>
+              <button type="button" class="chip" data-val="3">3+</button>
+              <button type="button" class="chip" data-val="4">4+</button>
+            </div>
+          </div>
+          <div class="filter-group">
+            <label>Min area (sq ft)</label>
+            <input type="number" id="fMinArea" placeholder="e.g. 1500">
+          </div>
+          <div class="filter-group" style="grid-column: 1/-1;">
+            <label>Amenities</label>
+            <div class="chip-row" id="fAmenities">
+              <button type="button" class="chip" data-tag="parking">Parking</button>
+              <button type="button" class="chip" data-tag="pool">Pool</button>
+              <button type="button" class="chip" data-tag="garden">Garden</button>
+              <button type="button" class="chip" data-tag="gym">Gym</button>
+              <button type="button" class="chip" data-tag="security">Security</button>
+              <button type="button" class="chip" data-tag="furnished">Furnished</button>
+            </div>
+          </div>
+          <div class="filters-footer">
+            <button class="btn btn-outline btn-sm" id="resetFiltersBtn">RESET</button>
+            <button class="btn btn-primary btn-sm" id="applyFiltersBtn">APPLY FILTERS</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-properties" id="discoverGrid"></div>
+      <div style="text-align:center;margin-top:40px;" id="noResults" class="hidden">
+        <p style="color:var(--charcoal-soft)">No properties match those filters yet. Try widening your search.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== INTERACTIVE MAP ===================== -->
+  <section class="section" id="neighborhood">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="kicker">LOCATION INTELLIGENCE</span>
+          <h2 class="reveal">Explore the Neighborhood</h2>
+        </div>
+        <p class="reveal">A stylised look at what surrounds The Oak Residence in Amber Hills, Jaipur.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:40px;align-items:start;" id="neighborhoodGrid">
+        <div class="neighborhood-map" id="neighborhoodMap" aria-label="Stylised neighbourhood map">
+          <!-- pins injected by JS -->
+        </div>
+        <div>
+          <h3 style="font-size:20px;">What's nearby</h3>
+          <div class="map-legend">
+            <span><i style="background:var(--olive)"></i>The property</span>
+            <span><i style="background:var(--bronze)"></i>Schools</span>
+            <span><i style="background:var(--red)"></i>Hospitals</span>
+            <span><i style="background:var(--charcoal)"></i>Everyday life</span>
+          </div>
+          <div class="commute-row">
+            <div class="commute-item"><span class="ci-num">12</span><span class="ci-label">MIN TO CITY CENTER</span></div>
+            <div class="commute-item"><span class="ci-num">8</span><span class="ci-label">MIN TO INTERNATIONAL SCHOOL</span></div>
+            <div class="commute-item"><span class="ci-num">15</span><span class="ci-label">MIN TO AIRPORT</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== STEP INSIDE (3D-style) ===================== -->
+  <section class="section" id="step-inside">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="kicker">IMMERSIVE PREVIEW</span>
+          <h2 class="reveal">Step Inside.</h2>
+        </div>
+        <p class="reveal">An interactive architectural study of The Oak Residence. Drag to rotate, click a mark to explore a room.</p>
+      </div>
+      <div class="house3d-wrap" id="house3dWrap">
+        <div class="house3d" id="house3d"><!-- SVG injected by JS --></div>
+      </div>
+      <p class="house3d-hint">DRAG TO ROTATE · CLICK A MARK TO EXPLORE</p>
+    </div>
+  </section>
+
+  <!-- ===================== NEW DEVELOPMENTS ===================== -->
+  <section class="section" id="developments">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="kicker">COMING SOON</span>
+          <h2 class="reveal">The Next Address</h2>
+        </div>
+        <p class="reveal">Three developments currently taking reservations across our core markets.</p>
+      </div>
+      <div class="dev-grid" id="devGrid"></div>
+    </div>
+  </section>
+
+  <!-- ===================== AGENTS ===================== -->
+  <section class="section" id="agents">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="kicker">YOUR ADVISORS</span>
+          <h2 class="reveal">Meet Your Advisors</h2>
+        </div>
+        <p class="reveal">Four specialists, each rooted in the market they represent.</p>
+      </div>
+      <div class="agent-grid" id="agentGrid"></div>
+    </div>
+  </section>
+
+  <!-- ===================== MORTGAGE CALCULATOR ===================== -->
+  <section class="section" id="calculator">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="kicker">FINANCIAL PLANNING</span>
+          <h2 class="reveal">Plan Your Purchase</h2>
+        </div>
+        <p class="reveal">Estimate a monthly payment before you start touring homes.</p>
+      </div>
+      <div class="calc-wrap">
+        <div>
+          <div class="calc-field">
+            <div class="calc-field-head"><label for="cPrice">Property price</label><span class="calc-val" id="cPriceVal">₹2,85,00,000</span></div>
+            <input type="range" id="cPrice" min="1000000" max="100000000" step="500000" value="28500000">
+          </div>
+          <div class="calc-field">
+            <div class="calc-field-head"><label for="cDown">Down payment</label><span class="calc-val" id="cDownVal">₹57,00,000 (20%)</span></div>
+            <input type="range" id="cDown" min="0" max="90" step="1" value="20">
+          </div>
+          <div class="calc-field">
+            <div class="calc-field-head"><label for="cTenure">Loan tenure</label><span class="calc-val" id="cTenureVal">20 years</span></div>
+            <input type="range" id="cTenure" min="5" max="30" step="1" value="20">
+          </div>
+          <div class="calc-field">
+            <div class="calc-field-head"><label for="cRate">Interest rate</label><span class="calc-val" id="cRateVal">8.5%</span></div>
+            <input type="range" id="cRate" min="6" max="14" step="0.1" value="8.5">
+          </div>
+        </div>
+        <div class="calc-result">
+          <div class="cr-label">ESTIMATED MONTHLY EMI</div>
+          <div class="cr-emi" id="crEmi">₹0</div>
+          <div class="cr-row"><span>Loan amount</span><b id="crLoan">₹0</b></div>
+          <div class="cr-row"><span>Total interest</span><b id="crInterest">₹0</b></div>
+          <div class="cr-row"><span>Total payment</span><b id="crTotal">₹0</b></div>
+          <p class="calc-disclaimer">Illustrative estimate only. Actual loan terms may vary by lender. This is not financial advice.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== COMPARISON ===================== -->
+  <section class="section" id="compare" style="background:var(--ivory-dim);">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="kicker">SIDE BY SIDE</span>
+          <h2 class="reveal">Compare Properties</h2>
+        </div>
+        <p class="reveal">Add up to 3 homes from any grid above using "+ Compare" — they'll appear here.</p>
+      </div>
+      <div id="compareEmpty" class="empty-state" style="padding:60px 20px;">
+        <h3>No properties selected yet</h3>
+        <p>Browse listings and choose "+ Compare" on any card to build a side-by-side view.</p>
+      </div>
+      <div class="compare-table-wrap hidden" id="compareTableWrap">
+        <table class="compare-table" id="compareTable"></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TESTIMONIALS ===================== -->
+  <section class="section" id="testimonials">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="kicker">HOMEOWNER STORIES</span>
+          <h2 class="reveal">Trusted by Homeowners</h2>
+        </div>
+      </div>
+      <div class="testi-track" id="testiTrack"></div>
+      <div class="testi-dots" id="testiDots"></div>
+    </div>
+  </section>
+
+  <!-- ===================== JOURNAL ===================== -->
+  <section class="section" id="journal">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="kicker">READING ROOM</span>
+          <h2 class="reveal">The Nestora Journal</h2>
+        </div>
+        <p class="reveal">Field notes on architecture, neighbourhoods and buying well.</p>
+      </div>
+      <div class="journal-grid" id="journalGrid"></div>
+    </div>
+  </section>
+
+  <!-- ===================== SAVED PROPERTIES ===================== -->
+  <section class="section hidden" id="saved-view">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="kicker">YOUR SHORTLIST</span>
+          <h2>Saved Properties</h2>
+        </div>
+      </div>
+      <div class="grid-properties" id="savedGrid"></div>
+      <div class="empty-state hidden" id="savedEmpty">
+        <h3>Nothing saved yet</h3>
+        <p>Tap the heart on any property to add it to your shortlist.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ABOUT (brief) ===================== -->
+  <section class="section" id="about">
+    <div class="wrap" style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;">
+      <div>
+        <span class="kicker">ABOUT NESTORA</span>
+        <h2 class="reveal" style="max-width:12ch;">Real estate, considered like architecture.</h2>
+        <p class="reveal" style="max-width:52ch;color:var(--charcoal-soft);font-size:16px;">Nestora is a self-initiated concept studio, built to explore what a luxury property platform could feel like when it borrows its discipline from editorial design and its patience from architecture — rather than from a listings marketplace. Every property, agent and article on this site is fictional, created for this design portfolio piece.</p>
+        <button class="btn btn-outline magnetic" data-cursor="discover" data-scroll-to="#discover">EXPLORE PROPERTIES</button>
+      </div>
+      <div class="reveal" style="aspect-ratio:4/5;border-radius:var(--radius-m);overflow:hidden;">
+        <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1000&q=80" alt="Detail of a sunlit modern residential courtyard" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FINAL CTA ===================== -->
+  <section id="final-cta">
+    <img src="https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=2000&q=80" alt="A luxury residence exterior lit at dusk" loading="lazy">
+    <div class="wrap fc-inner">
+      <h2>Your next address starts here.</h2>
+      <p>Tell us what you're looking for. We'll help you find it.</p>
+      <div class="fc-ctas">
+        <button class="btn btn-primary magnetic" data-cursor="discover" data-scroll-to="#discover">EXPLORE PROPERTIES</button>
+        <button class="btn btn-outline-light magnetic" data-cursor="discover" data-open-schedule>TALK TO AN ADVISOR</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===================== FOOTER ===================== -->
+<footer>
+  <div class="wrap">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand">NESTORA</div>
+        <p class="footer-tag">Find a place worth coming home to.</p>
+      </div>
+      <div class="footer-col">
+        <h4>EXPLORE</h4>
+        <ul>
+          <li><a href="#discover">Properties</a></li>
+          <li><a href="#discover" data-nav-buy>Buy</a></li>
+          <li><a href="#discover" data-nav-rent>Rent</a></li>
+          <li><a href="#developments">Developments</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>COMPANY</h4>
+        <ul>
+          <li><a href="#agents">Agents</a></li>
+          <li><a href="#journal">Journal</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#" data-open-schedule>Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>LEGAL</h4>
+        <ul>
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+          <li><a href="#">Cookie Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 NESTORA — CONCEPT PROJECT. All properties and people shown are fictional.</span>
+      <div class="footer-social">
+        <a href="#">Instagram</a>
+        <a href="#">LinkedIn</a>
+        <a href="#">YouTube</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ===================== PROPERTY DETAIL OVERLAY ===================== -->
+<div class="detail-overlay" id="detailOverlay" role="dialog" aria-modal="true" aria-label="Property details">
+  <button class="detail-close" id="detailCloseBtn" aria-label="Close property details">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
+  </button>
+  <div id="detailContent"><!-- injected by JS --></div>
+</div>
+
+<div class="fullscreen-gallery" id="fullscreenGallery">
+  <button class="fs-close" id="fsCloseBtn">CLOSE ✕</button>
+  <button class="fs-nav prev" id="fsPrevBtn" aria-label="Previous image">‹</button>
+  <img id="fsImage" src="" alt="">
+  <button class="fs-nav next" id="fsNextBtn" aria-label="Next image">›</button>
+  <div class="fs-count" id="fsCount"></div>
+</div>
+
+<!-- ===================== AGENT MODAL ===================== -->
+<div class="modal-overlay" id="agentModalOverlay">
+  <div class="modal-box" id="agentModalBox" role="dialog" aria-modal="true" aria-label="Advisor profile">
+    <button class="modal-close" data-close-agent-modal aria-label="Close">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
+    </button>
+    <div id="agentModalContent"></div>
+  </div>
+</div>
+
+<!-- ===================== SCHEDULE VISIT MODAL ===================== -->
+<div class="modal-overlay" id="scheduleModalOverlay">
+  <div class="modal-box" id="scheduleModalBox" role="dialog" aria-modal="true" aria-label="Schedule a visit">
+    <button class="modal-close" data-close-schedule-modal aria-label="Close">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
+    </button>
+    <div style="padding:36px 34px 30px;">
+      <span class="eyebrow">SCHEDULE A VISIT</span>
+      <h2 style="font-size:26px;margin-bottom:6px;">Come see it in person.</h2>
+      <p style="color:var(--charcoal-soft);font-size:14px;margin-bottom:26px;" id="scheduleSub">Tell us a little about you and we'll confirm a time.</p>
+      <form id="scheduleForm" novalidate>
+        <div class="form-grid">
+          <div class="form-field full">
+            <label for="visName">Full name</label>
+            <input type="text" id="visName" name="visName" autocomplete="name" required>
+            <span class="field-error"></span>
+          </div>
+          <div class="form-field">
+            <label for="visEmail">Email</label>
+            <input type="email" id="visEmail" name="visEmail" autocomplete="email" required>
+            <span class="field-error"></span>
+          </div>
+          <div class="form-field">
+            <label for="visPhone">Phone</label>
+            <input type="tel" id="visPhone" name="visPhone" autocomplete="tel" required>
+            <span class="field-error"></span>
+          </div>
+          <div class="form-field full">
+            <label for="visProperty">Property</label>
+            <select id="visProperty" name="visProperty"></select>
+          </div>
+          <div class="form-field">
+            <label for="visDate">Preferred date</label>
+            <input type="date" id="visDate" name="visDate" required>
+            <span class="field-error"></span>
+          </div>
+          <div class="form-field">
+            <label for="visTime">Preferred time</label>
+            <select id="visTime" name="visTime">
+              <option>10:00 AM</option>
+              <option>12:00 PM</option>
+              <option>2:00 PM</option>
+              <option>4:00 PM</option>
+              <option>6:00 PM</option>
+            </select>
+          </div>
+          <div class="form-field full">
+            <label for="visMessage">Message (optional)</label>
+            <textarea id="visMessage" name="visMessage" placeholder="Anything specific you'd like your advisor to know?"></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary magnetic" data-cursor="discover">SCHEDULE VISIT</button>
+          </div>
+        </div>
+      </form>
+      <div class="success-state" id="scheduleSuccess">
+        <div class="tick">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h3>Visit requested</h3>
+        <p>We've sent your request to your advisor. This is a concept demo, so no real booking has been made — but that's exactly how it would feel.</p>
+        <button class="btn btn-outline btn-sm" id="scheduleDoneBtn">CLOSE</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== COMPARE TRAY ===================== -->
+<div class="compare-tray" id="compareTray">
+  <div class="compare-tray-inner">
+    <div class="compare-chips" id="compareChips"></div>
+    <div style="display:flex;gap:12px;align-items:center;">
+      <span style="font-size:12.5px;color:var(--stone);" id="compareHint">Choose up to 3 to compare</span>
+      <button class="btn btn-bronze btn-sm" id="compareGoBtn">COMPARE PROPERTIES</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
