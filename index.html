@@ -59,33 +59,14 @@
 
 <main id="main">
 
-  <!-- ===================== 3D STAGE (persists behind Hero + Journey) ===================== -->
-  <div id="stage-canvas-wrap" aria-hidden="true"><canvas id="stageCanvas"></canvas></div>
+  <!-- ===================== CINEMATIC BACKDROP (persists behind Hero + Journey) ===================== -->
+  <!-- Renders as a cross-fading photographic sequence on every device — the same
+       experience on desktop and mobile, chosen for reliability over a WebGL
+       scene that behaved inconsistently across desktop GPUs/drivers. -->
   <div id="stage-fallback" aria-hidden="true">
     <img src="" alt="" id="fbImg0" class="active">
     <img src="" alt="" id="fbImg1">
   </div>
-
-  <!-- HUD + hotspot layer -->
-  <div class="hud-panel" id="hudPanel">
-    <div class="hud-name" id="hudName"></div>
-    <div class="hud-loc" id="hudLoc"></div>
-    <div class="hud-facts" id="hudFacts"></div>
-    <div class="hud-price" id="hudPrice"></div>
-  </div>
-  <div class="stage-controls" id="stageControls">
-    <button class="stage-toggle" id="toggleDayNight"><span class="dot"></span><span id="dnLabel">NIGHT</span></button>
-    <button class="stage-toggle" id="toggleAmbient"><span class="dot"></span>AMBIENT</button>
-    <button class="stage-toggle" id="toggleArchitecture"><span class="dot"></span>ARCHITECTURE MODE</button>
-  </div>
-  <div id="hotspotLayer" aria-hidden="true"></div>
-  <div class="hotspot-panel" id="hotspotPanel">
-    <button class="hp-close" id="hpCloseBtn">CLOSE ✕</button>
-    <h4 id="hpTitle"></h4>
-    <p id="hpDesc"></p>
-    <div class="hp-features" id="hpFeatures"></div>
-  </div>
-  <div id="archLabels"></div>
 
   <!-- ===================== HERO ===================== -->
   <section id="hero">
@@ -303,12 +284,10 @@
   <div id="experienceContent"></div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
 <script src="data.js"></script>
-<script src="scene.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

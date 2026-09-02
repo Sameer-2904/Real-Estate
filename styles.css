@@ -122,14 +122,8 @@ body.touch .cursor-dot, body.touch .cursor-ring{ display:none; }
 .jump-close{ position:absolute; top:26px; right: var(--gutter); color: var(--ivory); font-size:12px; letter-spacing:.1em; }
 
 /* ============================================================
-   3D STAGE (Hero + Journey)
+   CINEMATIC BACKDROP (Hero + Journey)
    ============================================================ */
-#stage{ position:relative; }
-#stage-canvas-wrap{
-  position: fixed; inset:0; z-index:1; opacity:1; transition: opacity 1s var(--ease-slow);
-}
-#stage-canvas-wrap canvas{ display:block; width:100%; height:100%; }
-#stage-canvas-wrap.hidden-stage{ opacity:0; pointer-events:none; }
 #stage-fallback{
   position:fixed; inset:0; z-index:1; overflow:hidden;
 }
@@ -160,72 +154,6 @@ body.touch .cursor-dot, body.touch .cursor-ring{ display:none; }
 .journey-scene p{ font-size: clamp(15px,1.6vw,18px); color: var(--stone); max-width:36ch; }
 .journey-scene.align-right .js-inner{ text-align:right; margin-left:auto; }
 .journey-scene.align-right p{ margin-left:auto; }
-
-/* HUD info panel */
-.hud-panel{
-  position: fixed; right: var(--gutter); bottom: 40px; z-index: 20;
-  background: var(--glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--line);
-  border-radius: var(--radius); padding: 22px 26px; width: 250px;
-  opacity:0; transform: translateY(14px); transition: opacity .6s var(--ease), transform .6s var(--ease);
-  pointer-events:none;
-}
-.hud-panel.show{ opacity:1; transform: translateY(0); }
-.hud-panel .hud-name{ font-family: var(--serif); font-size:16px; margin-bottom:2px; }
-.hud-panel .hud-loc{ font-size:11.5px; color: var(--stone); margin-bottom:14px; }
-.hud-facts{ display:flex; gap:14px; font-size:11px; color: var(--stone); border-top:1px solid var(--line); padding-top:12px; margin-bottom:12px; flex-wrap:wrap; }
-.hud-price{ font-family: var(--serif); color: var(--gold-soft); font-size:17px; }
-
-/* 3D controls cluster */
-.stage-controls{
-  position: fixed; left: var(--gutter); bottom: 40px; z-index:20;
-  display:flex; flex-direction:column; gap:10px;
-  opacity:0; transform: translateY(10px); transition: opacity .5s var(--ease), transform .5s var(--ease); pointer-events:none;
-}
-.stage-controls.show{ opacity:1; transform: translateY(0); pointer-events:auto; }
-.stage-toggle{
-  display:flex; align-items:center; gap:10px; font-size:10.5px; font-weight:700; letter-spacing:.1em;
-  background: var(--glass-bg); backdrop-filter: blur(14px); border:1px solid var(--line); border-radius:999px;
-  padding: 10px 16px; color: var(--stone); transition: all .35s var(--ease);
-}
-.stage-toggle .dot{ width:7px; height:7px; border-radius:50%; background: var(--stone-dim); transition: background .3s var(--ease); }
-.stage-toggle.active{ color: var(--ivory); border-color: var(--gold); }
-.stage-toggle.active .dot{ background: var(--gold); box-shadow: 0 0 8px var(--gold); }
-
-/* hotspots (positioned in JS via left/top from 3D projection) */
-.hotspot-3d{
-  position:fixed; width:26px; height:26px; border-radius:50%; z-index:15;
-  border: 1px solid rgba(244,239,230,.55); background: rgba(21,19,15,.35);
-  display:flex; align-items:center; justify-content:center; pointer-events:auto; cursor:pointer;
-  transform: translate(-50%,-50%); transition: background .3s var(--ease), border-color .3s var(--ease), opacity .4s var(--ease);
-}
-.hotspot-3d::before{ content:""; width:6px; height:6px; border-radius:50%; background: var(--gold-soft); }
-.hotspot-3d:hover, .hotspot-3d.active{ background: var(--gold); border-color: var(--gold); }
-.hotspot-3d .hs-tip{
-  position:absolute; bottom:34px; left:50%; transform: translateX(-50%); white-space:nowrap;
-  font-size:10.5px; letter-spacing:.08em; font-weight:700; background: var(--obsidian); color: var(--ivory);
-  padding:7px 12px; border-radius:3px; opacity:0; transition: opacity .25s var(--ease); pointer-events:none;
-}
-.hotspot-3d:hover .hs-tip{ opacity:1; }
-
-.hotspot-panel{
-  position:fixed; left: 50%; bottom: 40px; transform: translate(-50%,16px); z-index:25;
-  background: var(--glass-bg); backdrop-filter: blur(18px); border:1px solid var(--line); border-radius: var(--radius);
-  padding: 26px 30px; width: min(380px, 86vw);
-  opacity:0; pointer-events:none; transition: opacity .4s var(--ease), transform .4s var(--ease);
-}
-.hotspot-panel.show{ opacity:1; transform: translate(-50%,0); pointer-events:auto; }
-.hotspot-panel h4{ font-size:17px; margin-bottom:8px; }
-.hotspot-panel p{ font-size:13px; color: var(--stone); margin-bottom:14px; }
-.hotspot-panel .hp-features{ display:flex; gap:8px; flex-wrap:wrap; }
-.hotspot-panel .hp-features span{ font-size:10px; letter-spacing:.05em; border:1px solid var(--line); border-radius:999px; padding:6px 11px; color: var(--stone); }
-.hotspot-panel .hp-close{ position:absolute; top:14px; right:16px; color: var(--stone); font-size:13px; }
-
-.arch-label{
-  position:fixed; z-index:16; font-size:10px; letter-spacing:.15em; color: var(--gold-soft);
-  opacity:0; transition: opacity .6s var(--ease); pointer-events:none;
-}
-.arch-label.show{ opacity:1; }
-.arch-label::before{ content:""; display:inline-block; width:16px; height:1px; background: var(--gold-soft); margin-right:8px; vertical-align:middle; }
 
 /* ============================================================
    TYPOGRAPHY INTERLUDE
@@ -474,8 +402,6 @@ footer{ padding: 60px 0 34px; border-top: 1px solid var(--line); }
 body.modal-lock{ overflow:hidden; }
 
 @media (max-width: 720px){
-  .stage-controls, .hud-panel, .hotspot-3d, .hotspot-panel, .arch-label{ display:none !important; }
-
   /* dynamic viewport height: avoid iOS/Android address-bar jump on pinned sections */
   #hero, .journey-sticky, .gallery-sticky, .nb-sticky{
     height: 100vh;

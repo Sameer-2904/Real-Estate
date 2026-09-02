@@ -27,24 +27,11 @@
     gsap.registerPlugin(ScrollTrigger);
   }
 
-  // Full 3D only for capable, larger, pointer-driven devices. Everyone else
-  // gets the sanctioned fallback: a cinematic cross-fading image sequence
-  // synced to the same scroll progress and the same copy.
-  const USE_3D = !isTouch && !isSmallScreen && !prefersReducedMotion;
-  const quality = (navigator.hardwareConcurrency || 4) >= 8 ? "high" : (navigator.hardwareConcurrency || 4) >= 4 ? "medium" : "low";
-
-  let stageReady = false;
-  let lastJourneyProgress = 0;
-
-  function degradeToFallback(){
-    stageReady = false;
-    $("#stage-canvas-wrap").classList.add("hidden-stage");
-    $("#stage-fallback").classList.remove("hidden");
-    $("#stage-fallback").style.opacity = 1;
-    $("#stageControls").classList.remove("show");
-    updateFallbackImage(lastJourneyProgress);
-    toast("Switched to photo view for smoother performance");
-  }
+  // The cinematic backdrop is a cross-fading photographic sequence on every
+  // device — desktop and mobile now share the exact same experience. (An
+  // earlier version swapped in a live WebGL 3D scene on desktop; it behaved
+  // inconsistently across different GPUs/drivers, so it's been removed in
+  // favour of the reliable version everyone already saw on mobile.)
 
   /* ============================================================
      TOAST
@@ -122,17 +109,16 @@
       ring.style.left = rx + "px"; ring.style.top = ry + "px";
       requestAnimationFrame(loop);
     })();
-    const LABELS = { rotate: "ROTATE", view: "VIEW", explore: "EXPLORE", enter: "ENTER" };
+    const LABELS = { view: "VIEW", explore: "EXPLORE", enter: "ENTER" };
     document.addEventListener("mouseover", (e) => {
       const t = e.target.closest("[data-cursor]");
       if (t){ ring.classList.add("grow"); label.textContent = LABELS[t.dataset.cursor] || "VIEW"; return; }
-      if (e.target.closest("#stageCanvas")){ ring.classList.add("grow"); label.textContent = "ROTATE"; return; }
       if (e.target.closest(".collection-card, .material-cell, .life-cell")){ ring.classList.add("grow"); label.textContent = "EXPLORE"; return; }
       if (e.target.closest("img")){ ring.classList.add("grow"); label.textContent = "VIEW"; return; }
     });
     document.addEventListener("mouseout", (e) => {
       const stillOn = e.relatedTarget && e.relatedTarget.closest && (
-        e.relatedTarget.closest("[data-cursor], #stageCanvas, .collection-card, .material-cell, .life-cell, img")
+        e.relatedTarget.closest("[data-cursor], .collection-card, .material-cell, .life-cell, img")
       );
       if (!stillOn){ ring.classList.remove("grow"); label.textContent = ""; }
     });
@@ -218,29 +204,6 @@
      3D STAGE INIT + FALLBACK
      ============================================================ */
   function initStage(){
-    const canvasWrap = $("#stage-canvas-wrap");
-    const fallback = $("#stage-fallback");
-
-    if (USE_3D && window.NestoraScene){
-      const ok = window.NestoraScene.init($("#stageCanvas"), { quality });
-      if (ok){
-        stageReady = true;
-        fallback.classList.add("hidden");
-        window.addEventListener("resize", () => window.NestoraScene.resize());
-        (function raf(){
-          window.NestoraScene.tick();
-          if (stageReady && !window.NestoraScene.isReady()){
-            degradeToFallback();
-            return; // stop this loop; the fallback path needs no rAF
-          }
-          if (stageReady) requestAnimationFrame(raf);
-        })();
-        return;
-      }
-    }
-    // fallback: cinematic image cross-fade
-    canvasWrap.classList.add("hidden");
-    fallback.classList.remove("hidden");
     $("#fbImg0").src = optImg(JOURNEY_SCENES[0].fallbackImage, 1100);
     $("#fbImg0").alt = JOURNEY_SCENES[0].label;
     $("#fbImg1").src = optImg(JOURNEY_SCENES[1] ? JOURNEY_SCENES[1].fallbackImage : JOURNEY_SCENES[0].fallbackImage, 1100);
@@ -279,11 +242,9 @@
   }
 
   /* ============================================================
-     JOURNEY: build DOM, drive camera + text via scroll progress
+     JOURNEY: build DOM, drive the photographic backdrop + text
+     via scroll progress. Identical on every device.
      ============================================================ */
-  let journeyActive = false;
-  let hotspotsInited = false;
-
   function buildJourney(){
     const journey = $("#journey");
     const sticky = document.createElement("div");
@@ -299,20 +260,6 @@
       </div>
     `).join("");
     journey.appendChild(sticky);
-
-    // hotspots
-    const layer = $("#hotspotLayer");
-    layer.innerHTML = HOTSPOTS.map(h => `
-      <button class="hotspot-3d" data-hotspot="${h.id}" style="display:none;" aria-label="${h.label}">
-        <span class="hs-tip">${h.label}</span>
-      </button>
-    `).join("");
-
-    // arch labels
-    const archWrap = $("#archLabels");
-    archWrap.innerHTML = ["STRUCTURE","MATERIAL","LIGHT","SPACE"].map((t,i) => `
-      <div class="arch-label" data-arch="${i}" style="left:${8 + i*3}%; top:${20 + i*16}%;">${t}</div>
-    `).join("");
   }
 
   function updateJourneyText(rawProgress){
@@ -330,117 +277,18 @@
     });
   }
 
-  function initHUD(){
-    $("#hudName").textContent = RESIDENCE.title.toUpperCase();
-    $("#hudLoc").textContent = RESIDENCE.location.toUpperCase();
-    $("#hudFacts").innerHTML = `<span>${RESIDENCE.bedrooms} BEDROOMS</span><span>${RESIDENCE.bathrooms} BATHROOMS</span><span>${RESIDENCE.area}</span>`;
-    $("#hudPrice").textContent = RESIDENCE.price;
-  }
-
-  function initStageToggles(){
-    let dayNightOn = false, ambientOn = false, archOn = false;
-    const dnBtn = $("#toggleDayNight"), amBtn = $("#toggleAmbient"), arBtn = $("#toggleArchitecture");
-    dnBtn.addEventListener("click", () => {
-      dayNightOn = !dayNightOn;
-      dnBtn.classList.toggle("active", dayNightOn);
-      $("#dnLabel").textContent = dayNightOn ? "NIGHT" : "DAY";
-      if (stageReady) window.NestoraScene.setDayNight(dayNightOn);
-      toast(dayNightOn ? "Night mode" : "Day mode");
-    });
-    amBtn.addEventListener("click", () => {
-      ambientOn = !ambientOn;
-      amBtn.classList.toggle("active", ambientOn);
-      if (stageReady) window.NestoraScene.setAmbient(ambientOn);
-      toast(ambientOn ? "Ambient mode enabled" : "Ambient mode off");
-    });
-    arBtn.addEventListener("click", () => {
-      archOn = !archOn;
-      arBtn.classList.toggle("active", archOn);
-      if (stageReady) window.NestoraScene.setArchitectureMode(archOn);
-      $$(".arch-label").forEach(l => l.classList.toggle("show", archOn));
-      toast(archOn ? "Architecture mode" : "Architecture mode off");
-    });
-  }
-
-  function initHotspots(){
-    const panel = $("#hotspotPanel");
-    $$("[data-hotspot]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const id = btn.dataset.hotspot;
-        const h = HOTSPOTS.find(x => x.id === id);
-        if (!h) return;
-        if (stageReady) window.NestoraScene.moveCameraTo(h.camera.pos, h.camera.target, 1.5);
-        $("#hpTitle").textContent = h.label;
-        $("#hpDesc").textContent = h.description;
-        $("#hpFeatures").innerHTML = h.features.map(f => `<span>${f}</span>`).join("");
-        panel.classList.add("show");
-        $$("[data-hotspot]").forEach(b => b.classList.toggle("active", b === btn));
-      });
-    });
-    $("#hpCloseBtn").addEventListener("click", () => {
-      panel.classList.remove("show");
-      $$("[data-hotspot]").forEach(b => b.classList.remove("active"));
-      if (stageReady) window.NestoraScene.releaseManualOverride();
-    });
-    hotspotsInited = true;
-  }
-
-  function hotspotRAF(){
-    if (journeyActive && stageReady){
-      const effective = true;
-      HOTSPOTS.forEach(h => {
-        const btn = $(`[data-hotspot="${h.id}"]`);
-        if (!btn) return;
-        const p = window.NestoraScene.projectPoint(h.id);
-        if (p && p.visible){
-          btn.style.display = "flex";
-          btn.style.left = p.x + "px";
-          btn.style.top = p.y + "px";
-        } else {
-          btn.style.display = "none";
-        }
-      });
-    }
-    requestAnimationFrame(hotspotRAF);
-  }
-
   function initJourneyScroll(){
     buildJourney();
-    initHUD();
-    initStageToggles();
-    initHotspots();
-    if (USE_3D) requestAnimationFrame(hotspotRAF);
-
-    // mouse parallax for the 3D rig
-    if (!isTouch){
-      window.addEventListener("mousemove", (e) => {
-        const nx = (e.clientX / window.innerWidth) * 2 - 1;
-        const ny = (e.clientY / window.innerHeight) * 2 - 1;
-        if (stageReady) window.NestoraScene.setMouse(nx * 1.4, ny * 0.8);
-      });
-    }
-
     if (typeof ScrollTrigger === "undefined") return;
 
     ScrollTrigger.create({
       trigger: "#journey", start: "top top", end: "bottom bottom", scrub: 0.4,
       onUpdate: (self) => {
-        const p = self.progress;
-        lastJourneyProgress = p;
-        if (stageReady) window.NestoraScene.setJourneyProgress(p);
-        else updateFallbackImage(p);
-        updateJourneyText(p);
+        updateFallbackImage(self.progress);
+        updateJourneyText(self.progress);
       },
-      onEnter: () => { journeyActive = true; $("#hudPanel").classList.add("show"); $("#stageControls").classList.add("show"); },
-      onEnterBack: () => { journeyActive = true; $("#hudPanel").classList.add("show"); $("#stageControls").classList.add("show"); },
-      onLeave: () => { journeyActive = false; $("#hudPanel").classList.remove("show"); $("#stageControls").classList.remove("show"); $("#stage-canvas-wrap").classList.add("hidden-stage"); $("#stage-fallback").style.opacity = 0; },
-      onLeaveBack: () => { journeyActive = false; $("#hudPanel").classList.remove("show"); $("#stageControls").classList.remove("show"); },
-    });
-
-    // fade the stage back in if scrolling back up into the journey/hero zone
-    ScrollTrigger.create({
-      trigger: "#hero", start: "top top", end: "bottom top",
-      onEnterBack: () => { $("#stage-canvas-wrap").classList.remove("hidden-stage"); $("#stage-fallback").style.opacity = 1; },
+      onLeave: () => { $("#stage-fallback").style.opacity = 0; },
+      onEnterBack: () => { $("#stage-fallback").style.opacity = 1; },
     });
   }
 
