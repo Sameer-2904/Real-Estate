@@ -106,10 +106,10 @@ const HOTSPOTS = [
 
 /* ---------- Materials palette ---------- */
 const MATERIALS = [
-  { name: "NATURAL STONE", image: IMG("photo-1517057290734-a4f4d0b0a7c9"), note: "Local sandstone, hand-honed for the podium and courtyard walls." },
+  { name: "NATURAL STONE", image: IMG("photo-1697497710118-0d5cb5a7094a"), note: "Local sandstone, hand-honed for the podium and courtyard walls." },
   { name: "OAK", image: IMG("photo-1600566753190-17f0baa2a6c3"), note: "Rift-sawn white oak, used across flooring and cabinetry." },
-  { name: "GLASS", image: IMG("photo-1600607687644-aac4c3eac7f4"), note: "Low-iron glazing, floor-to-ceiling, framed in dark bronze." },
-  { name: "BRASS", image: IMG("photo-1523419409543-8c1a1a4e7e0a"), note: "Aged brass hardware throughout, chosen to patina over time." },
+  { name: "GLASS", image: IMG("photo-1609363909807-c15eea7fb7b7"), note: "Low-iron glazing, floor-to-ceiling, framed in dark bronze." },
+  { name: "BRASS", image: IMG("photo-1559058922-5d29e1f00075"), note: "Aged brass hardware throughout, chosen to patina over time." },
   { name: "CONCRETE", image: IMG("photo-1512917774080-9991f1c4c750"), note: "Board-formed concrete, left exposed on the primary structural walls." },
 ];
 
@@ -170,7 +170,7 @@ const LIFESTYLE_IMAGES = [
   { caption: "Morning, before the city wakes.", image: IMG("photo-1495474472287-4d71bcdd2085") },
   { caption: "A pool that catches the entire afternoon.", image: IMG("photo-1571896349842-33c89424de2d") },
   { caption: "Dinner, table set for six.", image: IMG("photo-1600891964092-4316c288032e") },
-  { caption: "The terrace, after sunset.", image: IMG("photo-1600566752734-2a0cd53d0c8f") },
+  { caption: "The terrace, after sunset.", image: IMG("photo-1731789247154-f0461bfaf269") },
   { caption: "A garden that requires very little.", image: IMG("photo-1600607687920-4e2a09cf159d") },
   { caption: "The house, lit from within.", image: IMG("photo-1600566753086-00f18fb6b3ea") },
 ];
