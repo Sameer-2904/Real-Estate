@@ -11,6 +11,18 @@
   const isSmallScreen = window.innerWidth < 880;
   if (isTouch) document.body.classList.add("touch");
 
+  // iOS/Android address-bar-safe viewport height unit, used by the mobile CSS above
+  function setVH(){ document.documentElement.style.setProperty("--vh", (window.innerHeight * 0.01) + "px"); }
+  setVH();
+  window.addEventListener("resize", setVH);
+  window.addEventListener("orientationchange", setVH);
+
+  // trims Unsplash payload on small screens; a no-op on desktop
+  function optImg(url, mobileWidth){
+    if (!isSmallScreen || !url) return url;
+    return url.replace(/([?&]w=)\d+/, "$1" + (mobileWidth || 900));
+  }
+
   if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined"){
     gsap.registerPlugin(ScrollTrigger);
   }
@@ -22,6 +34,17 @@
   const quality = (navigator.hardwareConcurrency || 4) >= 8 ? "high" : (navigator.hardwareConcurrency || 4) >= 4 ? "medium" : "low";
 
   let stageReady = false;
+  let lastJourneyProgress = 0;
+
+  function degradeToFallback(){
+    stageReady = false;
+    $("#stage-canvas-wrap").classList.add("hidden-stage");
+    $("#stage-fallback").classList.remove("hidden");
+    $("#stage-fallback").style.opacity = 1;
+    $("#stageControls").classList.remove("show");
+    updateFallbackImage(lastJourneyProgress);
+    toast("Switched to photo view for smoother performance");
+  }
 
   /* ============================================================
      TOAST
@@ -136,7 +159,7 @@
      ============================================================ */
   let lenis;
   function initSmoothScroll(){
-    if (prefersReducedMotion || typeof Lenis === "undefined") return;
+    if (prefersReducedMotion || typeof Lenis === "undefined" || isTouch) return;
     lenis = new Lenis({ duration: 1.1, smoothWheel: true });
     if (typeof ScrollTrigger !== "undefined"){
       lenis.on("scroll", ScrollTrigger.update);
@@ -204,16 +227,23 @@
         stageReady = true;
         fallback.classList.add("hidden");
         window.addEventListener("resize", () => window.NestoraScene.resize());
-        (function raf(){ window.NestoraScene.tick(); requestAnimationFrame(raf); })();
+        (function raf(){
+          window.NestoraScene.tick();
+          if (stageReady && !window.NestoraScene.isReady()){
+            degradeToFallback();
+            return; // stop this loop; the fallback path needs no rAF
+          }
+          if (stageReady) requestAnimationFrame(raf);
+        })();
         return;
       }
     }
     // fallback: cinematic image cross-fade
     canvasWrap.classList.add("hidden");
     fallback.classList.remove("hidden");
-    $("#fbImg0").src = JOURNEY_SCENES[0].fallbackImage;
+    $("#fbImg0").src = optImg(JOURNEY_SCENES[0].fallbackImage, 1100);
     $("#fbImg0").alt = JOURNEY_SCENES[0].label;
-    $("#fbImg1").src = JOURNEY_SCENES[1] ? JOURNEY_SCENES[1].fallbackImage : JOURNEY_SCENES[0].fallbackImage;
+    $("#fbImg1").src = optImg(JOURNEY_SCENES[1] ? JOURNEY_SCENES[1].fallbackImage : JOURNEY_SCENES[0].fallbackImage, 1100);
   }
 
   function updateFallbackImage(rawProgress){
@@ -224,7 +254,7 @@
     const showOnZero = img0.classList.contains("active");
     const target = showOnZero ? img1 : img0;
     const outgoing = showOnZero ? img0 : img1;
-    target.src = JOURNEY_SCENES[idx].fallbackImage;
+    target.src = optImg(JOURNEY_SCENES[idx].fallbackImage, 1100);
     target.alt = JOURNEY_SCENES[idx].label;
     target.dataset.idx = idx;
     target.classList.add("active");
@@ -396,6 +426,7 @@
       trigger: "#journey", start: "top top", end: "bottom bottom", scrub: 0.4,
       onUpdate: (self) => {
         const p = self.progress;
+        lastJourneyProgress = p;
         if (stageReady) window.NestoraScene.setJourneyProgress(p);
         else updateFallbackImage(p);
         updateJourneyText(p);
@@ -478,7 +509,7 @@
   function renderMaterials(){
     $("#materialGrid").innerHTML = MATERIALS.map(m => `
       <div class="material-cell" data-cursor="view">
-        <img src="${m.image}" alt="Close-up texture of ${m.name.toLowerCase()} used in The Glass House" loading="lazy">
+        <img src="${optImg(m.image, 700)}" alt="Close-up texture of ${m.name.toLowerCase()} used in The Glass House" loading="lazy">
         <div class="mc-note"><span>${m.note}</span></div>
         <div class="mc-name">${m.name}</div>
       </div>
@@ -492,7 +523,7 @@
     const track = $("#galleryTrack");
     track.innerHTML = GALLERY_IMAGES.map((g, i) => `
       <div class="gallery-slide" data-cursor="view">
-        <img src="${g.image}" alt="${g.label}, interior photograph of The Glass House" loading="lazy">
+        <img src="${optImg(g.image, 1100)}" alt="${g.label}, interior photograph of The Glass House" loading="lazy">
         <div class="gs-meta"><div class="gs-count">${String(i+1).padStart(2,"0")} / ${String(GALLERY_IMAGES.length).padStart(2,"0")}</div><div class="gs-label">${g.label}</div></div>
       </div>
     `).join("");
@@ -576,7 +607,7 @@
     track.innerHTML = NEIGHBORHOOD_STORY.map(n => `
       <div class="nb-panel">
         <div class="nb-text"><div class="nb-word">${n.word}</div><p>${n.text}</p></div>
-        <div class="nb-media"><img src="${n.image}" alt="A scene representing ${n.word.replace('.', '')} in the Amber Hills neighbourhood" loading="lazy"></div>
+        <div class="nb-media"><img src="${optImg(n.image, 1100)}" alt="A scene representing ${n.word.replace('.', '')} in the Amber Hills neighbourhood" loading="lazy"></div>
       </div>
     `).join("");
     if (typeof ScrollTrigger === "undefined") return;
@@ -595,7 +626,7 @@
   function renderLifestyle(){
     $("#lifestyleGrid").innerHTML = LIFESTYLE_IMAGES.map(l => `
       <div class="life-cell reveal" data-cursor="view">
-        <img src="${l.image}" alt="${l.caption}" loading="lazy">
+        <img src="${optImg(l.image, 700)}" alt="${l.caption}" loading="lazy">
         <div class="lc-cap">${l.caption}</div>
       </div>
     `).join("");
@@ -608,7 +639,7 @@
   function renderCollection(){
     $("#collectionGrid").innerHTML = COLLECTION.map(c => `
       <article class="collection-card reveal" data-open-experience="${c.id}" data-cursor="explore">
-        <div class="cc-media"><img src="${c.image}" alt="Exterior photograph of ${c.name} in ${c.location}" loading="lazy"></div>
+        <div class="cc-media"><img src="${optImg(c.image, 900)}" alt="Exterior photograph of ${c.name} in ${c.location}" loading="lazy"></div>
         <div class="cc-index">${c.index}</div>
         <div class="cc-name">${c.name}</div>
         <div class="cc-loc">${c.location} · ${c.area} · ${c.bedrooms} BEDROOMS</div>
@@ -625,7 +656,7 @@
     if (!c) return;
     $("#experienceContent").innerHTML = `
       <div class="exp-hero">
-        <img src="${c.image}" alt="Exterior photograph of ${c.name}">
+        <img src="${optImg(c.image, 1100)}" alt="Exterior photograph of ${c.name}">
         <div class="exp-hero-info">
           <span class="kicker">${c.location.toUpperCase()}</span>
           <h1>${c.name}</h1>
@@ -637,7 +668,7 @@
       </div>
       <div class="exp-panels">
         <div class="exp-panel active" data-panel="GALLERY">
-          <div class="exp-gallery-grid">${c.gallery.map(g => `<img src="${g}" alt="Interior or exterior view of ${c.name}" loading="lazy">`).join("")}</div>
+          <div class="exp-gallery-grid">${c.gallery.map(g => `<img src="${optImg(g, 700)}" alt="Interior or exterior view of ${c.name}" loading="lazy">`).join("")}</div>
         </div>
         <div class="exp-panel" data-panel="SPECIFICATIONS">
           <div class="exp-specs-grid">

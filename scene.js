@@ -236,6 +236,13 @@ window.NestoraScene = (function(){
       renderer.shadowMap.enabled = quality === "high";
       if (renderer.shadowMap.enabled) renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
+      canvas.addEventListener("webglcontextlost", (e) => {
+        e.preventDefault();
+        console.warn("NestoraScene: WebGL context lost — disabling 3D for this session.");
+        ready = false;
+        supported = false;
+      }, false);
+
       ambLight = new THREE.AmbientLight(0xfff3e0, 0.55);
       scene.add(ambLight);
       sunLight = new THREE.DirectionalLight(0xffdcae, 1.1);
@@ -329,6 +336,16 @@ window.NestoraScene = (function(){
   /* ---------- render loop ---------- */
   function tick(){
     if (!ready) return;
+    try{
+      _tickInner();
+    } catch(e){
+      console.warn("NestoraScene render error — disabling 3D for this session.", e);
+      ready = false;
+      supported = false;
+    }
+  }
+
+  function _tickInner(){
 
     dayNight += (dayNightTarget - dayNight) * 0.045;
     archMode += (archModeTarget - archMode) * 0.06;

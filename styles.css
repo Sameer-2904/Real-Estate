@@ -475,4 +475,39 @@ body.modal-lock{ overflow:hidden; }
 
 @media (max-width: 720px){
   .stage-controls, .hud-panel, .hotspot-3d, .hotspot-panel, .arch-label{ display:none !important; }
+
+  /* dynamic viewport height: avoid iOS/Android address-bar jump on pinned sections */
+  #hero, .journey-sticky, .gallery-sticky, .nb-sticky{
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+    height: 100dvh;
+  }
+
+  /* shorter pinned scroll distances feel snappier on a phone */
+  #journey{ height: 340vh; }
+  #gallery-pin{ height: 380vh; }
+  #neighborhood-pin{ height: 260vh; }
+
+  /* :hover reveals content on desktop only — show it plainly on touch */
+  body.touch .mc-name{ opacity: 1; transform: none; }
+  body.touch .mc-note{ opacity: 1; background: linear-gradient(0deg, rgba(21,19,15,.9), transparent 65%); }
+  body.touch .material-cell img{ filter: brightness(.6); }
+
+  /* the section-progress dots don't fit comfortably next to the menu button */
+  .tb-progress{ display: none; }
+
+  /* respect iPhone notch / home-indicator safe areas */
+  #topbar{ padding-top: calc(18px + env(safe-area-inset-top)); }
+  #toast-stack{ right: calc(16px + env(safe-area-inset-right)); left: 16px; bottom: calc(20px + env(safe-area-inset-bottom)); }
+  .toast{ min-width: 0; }
+
+  .material-grid{ grid-template-columns: 1fr 1fr; }
+  .gallery-slide{ width: 84vw; height: 52vh; }
+  .nb-word{ font-size: clamp(40px, 13vw, 64px); }
 }
+
+@media (max-width: 420px){
+  .material-grid{ grid-template-columns: 1fr; }
+  .material-cell{ aspect-ratio: 16/10; }
+}
+
