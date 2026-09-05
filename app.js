@@ -225,20 +225,132 @@
   }
 
   /* ============================================================
-     HERO INTRO
+     HERO: fanned card deck + "ghost" headline
      ============================================================ */
+
+  // Real, already-verified photography pulled from data already used
+  // elsewhere on the site — no new unverified image IDs introduced.
+  const HERO_CARD_IMAGES = [
+    JOURNEY_SCENES[2].fallbackImage,          // master suite
+    LIFESTYLE_IMAGES[1].image,                // pool
+    JOURNEY_SCENES[1].fallbackImage,          // living space
+    GALLERY_IMAGES[2].image,                  // kitchen
+    JOURNEY_SCENES[0].fallbackImage,          // arrival / exterior
+    COLLECTION[1].image,                      // palm estate, Goa
+    JOURNEY_SCENES[3].fallbackImage,          // courtyard
+    JOURNEY_SCENES[4].fallbackImage,          // rooftop
+  ];
+
+  function buildHeroCards(){
+    const wrap = $("#heroCards");
+    wrap.innerHTML = HERO_CARD_IMAGES.map((src, i) => `
+      <div class="h-card hc-${i+1}" data-rot="${[-9,-5,-2,3,0,4,7,-4][i]}" data-depth="${[14,10,8,12,6,11,9,13][i]}" data-cursor="view">
+        <img src="${optImg(src, 500)}" alt="A view inside The Glass House" loading="eager">
+      </div>
+    `).join("");
+  }
+
+  function letterizeGhost(){
+    const el = $("#heroGhost");
+    const text = el.textContent;
+    el.innerHTML = text.split("").map(ch => `<span class="letter">${ch === " " ? "&nbsp;" : ch}</span>`).join("");
+  }
+
   function playHeroIntro(){
+    const cards = $$(".h-card");
     if (typeof gsap === "undefined" || prefersReducedMotion){
-      $$("#hero h1 .line span, .hero-eyebrow span").forEach(s => s.style.transform = "translateY(0)");
-      $("#heroCtas").style.opacity = 1; $("#heroCtas").style.transform = "translateY(0)";
+      $$("#heroLead .word > span").forEach(s => s.style.transform = "translateY(0)");
+      $$("#heroGhost .letter").forEach(s => { s.style.transform = "translateY(0)"; s.style.opacity = 1; });
+      cards.forEach(c => { c.style.opacity = 1; c.style.transform = "none"; });
+      $("#heroSubline").style.opacity = 1; $("#heroSubline").style.transform = "translateY(0)";
       $("#heroScrollHint").style.opacity = 1;
       return;
     }
-    gsap.timeline({ defaults: { ease: "power4.out" } })
-      .to(".hero-eyebrow span", { y: 0, duration: .8 })
-      .to("#hero h1 .line span", { y: 0, duration: 1.05, stagger: .1 }, "-=.5")
-      .to("#heroCtas", { opacity: 1, y: 0, duration: .8 }, "-=.5")
-      .to("#heroScrollHint", { opacity: 1, duration: .8 }, "-=.5");
+
+    cards.forEach(card => {
+      const rot = parseFloat(card.dataset.rot) || 0;
+      card.dataset.restRot = rot;
+      gsap.set(card, { y: -700, rotation: rot + 22, opacity: 0, scale: .72 });
+    });
+    gsap.set("#heroLead .word > span", { y: "105%" });
+    gsap.set("#heroGhost .letter", { y: 70, opacity: 0 });
+    gsap.set("#heroSubline", { opacity: 0, y: 18 });
+    gsap.set("#heroScrollHint", { opacity: 0 });
+
+    gsap.timeline({ defaults: { ease: "power3.out" } })
+      .to("#heroLead .word > span", { y: "0%", duration: .85, stagger: .06 }, .1)
+      .to("#heroGhost .letter", { y: 0, opacity: 1, duration: .8, stagger: .035, ease: "back.out(1.6)" }, .4)
+      .to(cards, {
+        y: 0, opacity: 1, scale: 1,
+        rotation: (i, el) => parseFloat(el.dataset.restRot) || 0,
+        duration: 1.1, stagger: { each: .07, from: "center" }, ease: "back.out(1.35)",
+      }, .55)
+      .to("#heroSubline", { opacity: 1, y: 0, duration: .7 }, 1.35)
+      .to("#heroScrollHint", { opacity: 1, duration: .6 }, 1.5);
+
+    if (!isTouch){
+      cards.forEach((card, i) => {
+        const rot = parseFloat(card.dataset.restRot) || 0;
+        gsap.to(card, {
+          y: `+=${8 + (i % 3) * 5}`, rotation: rot + (i % 2 === 0 ? 1.4 : -1.4),
+          duration: 3 + (i % 4) * .5, delay: 1.8 + i * .1, ease: "sine.inOut", yoyo: true, repeat: -1,
+        });
+      });
+    }
+  }
+
+  function initHeroCardInteractions(){
+    if (isTouch) return;
+    const hero = $("#hero");
+    let mx = 0, my = 0, tx = 0, ty = 0;
+    hero.addEventListener("mousemove", (e) => {
+      const r = hero.getBoundingClientRect();
+      mx = ((e.clientX - r.left) / r.width - 0.5) * 2;
+      my = ((e.clientY - r.top) / r.height - 0.5) * 2;
+    });
+    hero.addEventListener("mouseleave", () => { mx = 0; my = 0; });
+    (function parallaxLoop(){
+      tx += (mx - tx) * .05; ty += (my - ty) * .05;
+      $$(".h-card").forEach(card => {
+        const d = parseFloat(card.dataset.depth) || 8;
+        card.style.translate = `${tx * d}px ${ty * d * .5}px`;
+      });
+      requestAnimationFrame(parallaxLoop);
+    })();
+
+    $$(".h-card").forEach(card => {
+      card.addEventListener("mousemove", (e) => {
+        const r = card.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width - 0.5;
+        const py = (e.clientY - r.top) / r.height - 0.5;
+        gsap.to(card, { rotateX: -py * 16, rotateY: px * 16, scale: 1.1, zIndex: 20, duration: .4, ease: "power2.out", transformPerspective: 700, overwrite: "auto" });
+      });
+      card.addEventListener("mouseleave", () => {
+        gsap.to(card, { rotateX: 0, rotateY: 0, scale: 1, zIndex: "", duration: .8, ease: "elastic.out(1, .6)", overwrite: "auto" });
+      });
+    });
+  }
+
+  function initHeroScrollFan(){
+    if (typeof ScrollTrigger === "undefined" || prefersReducedMotion) return;
+    const moves = [
+      { x: -240, y: -30, rot: -22 }, { x: -186, y: 22, rot: -16 }, { x: -110, y: 76, rot: -9 }, { x: -36, y: 112, rot: -3 },
+      { x: 36, y: 112, rot: 3 }, { x: 110, y: 76, rot: 10 }, { x: 186, y: 22, rot: 20 }, { x: 240, y: -30, rot: 26 },
+    ];
+    ScrollTrigger.create({
+      trigger: "#hero", start: "top top", end: "bottom top", scrub: .7,
+      onUpdate: (self) => {
+        const p = self.progress;
+        gsap.set("#heroGhost", { scale: 1 + .16 * p, opacity: 1 - .5 * p });
+        gsap.set("#heroLead", { y: -50 * p, opacity: 1 - p * 1.4 });
+        $$(".h-card").forEach((card, i) => {
+          const m = moves[i]; if (!m) return;
+          const rest = parseFloat(card.dataset.restRot) || 0;
+          gsap.set(card, { x: m.x * p, y: m.y * p, rotation: rest + m.rot * p, opacity: 1 - p * .9 });
+        });
+        gsap.set("#heroSubline, #heroScrollHint", { opacity: 1 - p * 2.2 });
+      },
+    });
   }
 
   /* ============================================================
@@ -620,6 +732,10 @@
      INIT
      ============================================================ */
   function init(){
+    letterizeGhost();
+    buildHeroCards();
+    initHeroCardInteractions();
+    initHeroScrollFan();
     initCursor();
     initMagnetic();
     initSmoothScroll();

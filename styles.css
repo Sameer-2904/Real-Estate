@@ -131,16 +131,71 @@ body.touch .cursor-dot, body.touch .cursor-ring{ display:none; }
 #stage-fallback img.active{ opacity:1; }
 #stage-fallback::after{ content:""; position:absolute; inset:0; background: linear-gradient(180deg, rgba(21,19,15,.35), rgba(21,19,15,.75)); }
 
-#hero{ position:relative; height:100vh; min-height:640px; z-index:4; display:flex; align-items:flex-end; }
-#hero .wrap{ width:100%; padding-bottom: clamp(50px,8vw,100px); }
-#hero .hero-eyebrow{ font-size:12px; letter-spacing:.2em; color: var(--stone); margin-bottom:24px; }
-#hero h1{ font-size: clamp(42px,7.6vw,94px); line-height:.98; color: var(--ivory); margin:0 0 26px; max-width:14ch; }
-#hero h1 .line{ overflow:hidden; } #hero h1 .line span{ display:block; transform: translateY(105%); }
-#hero .hero-ctas{ display:flex; gap:18px; flex-wrap:wrap; align-items:center; opacity:0; transform: translateY(14px); }
-#hero .hero-scroll{ margin-top:44px; display:flex; align-items:center; gap:12px; font-size:10.5px; letter-spacing:.16em; color: var(--stone); opacity:0; }
-#hero .hero-scroll .sline{ width:1px; height:38px; background: rgba(244,239,230,.35); position:relative; overflow:hidden; }
+#hero{
+  position:relative; min-height:100vh; z-index:4; overflow:hidden;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+  padding: 150px 24px 70px;
+  background:
+    radial-gradient(120% 65% at 50% 0%, #221e15 0%, #15130F 55%, #0e0c09 100%);
+}
+
+.hero-lead{
+  font-family: var(--serif); font-weight:440; color: var(--ivory);
+  font-size: clamp(24px, 3.6vw, 44px); line-height:1.12; letter-spacing:-.005em;
+  position:relative; z-index:4; max-width: 18ch;
+}
+.hero-lead .word{ display:inline-block; overflow:hidden; vertical-align:top; }
+.hero-lead .word > span{ display:inline-block; transform: translateY(105%); }
+
+.hero-ghost-wrap{ position:relative; width:100%; margin-top:-4px; display:flex; justify-content:center; z-index:1; pointer-events:none; }
+.hero-ghost{
+  font-family: var(--serif); font-style:italic; font-weight:560;
+  font-size: clamp(58px, 15vw, 210px); line-height:.86; letter-spacing:-.01em;
+  color: rgba(201,164,103,.15); white-space:nowrap; user-select:none;
+}
+.hero-ghost .letter{ display:inline-block; transform-origin:bottom; }
+
+.hero-cards{ position:absolute; left:0; right:0; top:52%; height:360px; z-index:3; pointer-events:none; transform: translateY(-50%); }
+.hero-cards > *{ pointer-events:auto; }
+.h-card{
+  position:absolute; border-radius: var(--radius); overflow:hidden; cursor:pointer; will-change:transform;
+  border: 1px solid rgba(244,239,230,.1);
+  box-shadow: 0 34px 60px -22px rgba(0,0,0,.65), 0 12px 26px -10px rgba(0,0,0,.4);
+}
+.h-card::before{
+  content:""; position:absolute; inset:0; z-index:2; pointer-events:none; border-radius: inherit;
+  background: linear-gradient(160deg, rgba(255,255,255,.14) 0%, transparent 32%, transparent 68%, rgba(0,0,0,.4) 100%);
+}
+.h-card img{ width:100%; height:100%; object-fit:cover; display:block; }
+.hc-1{ width:120px; height:168px; left:4%; top:34px; }
+.hc-2{ width:150px; height:206px; left:13%; top:54px; }
+.hc-3{ width:188px; height:254px; left:23%; top:22px; }
+.hc-4{ width:142px; height:190px; left:37%; top:74px; }
+.hc-5{ width:216px; height:292px; left:45%; top:0; }
+.hc-6{ width:150px; height:202px; left:60%; top:58px; }
+.hc-7{ width:164px; height:226px; left:71%; top:32px; }
+.hc-8{ width:122px; height:164px; left:85%; top:52px; }
+
+.hero-subline{ position:relative; z-index:4; margin-top: 210px; display:flex; flex-direction:column; align-items:center; gap:18px; opacity:0; transform: translateY(20px); }
+.hero-subline-text{ font-size:12.5px; letter-spacing:.1em; color: var(--stone); }
+
+#hero .hero-scroll{ position:relative; z-index:4; margin-top:38px; display:flex; align-items:center; gap:12px; font-size:10.5px; letter-spacing:.16em; color: var(--stone); opacity:0; }
+#hero .hero-scroll .sline{ width:1px; height:32px; background: rgba(244,239,230,.35); position:relative; overflow:hidden; }
 #hero .hero-scroll .sline::after{ content:""; position:absolute; top:-100%; left:0; width:100%; height:100%; background: var(--gold); animation: scrl 2.4s ease-in-out infinite; }
 @keyframes scrl{ 0%{top:-100%;} 50%{top:0;} 100%{top:100%;} }
+
+@media (max-width: 760px){
+  .hero-cards{ height:230px; top:56%; }
+  .hc-1{ width:74px; height:104px; left:0%; top:20px; }
+  .hc-2{ width:88px; height:122px; left:11%; top:36px; }
+  .hc-3{ width:108px; height:148px; left:23%; top:14px; }
+  .hc-4{ width:86px; height:116px; left:38%; top:50px; }
+  .hc-5{ width:128px; height:174px; left:47%; top:0; }
+  .hc-6{ width:92px; height:126px; left:63%; top:40px; }
+  .hc-7{ width:98px; height:136px; left:75%; top:20px; }
+  .hc-8{ width:76px; height:106px; left:88%; top:36px; }
+  .hero-subline{ margin-top:150px; }
+}
 
 /* ---------- Journey pinned zone ---------- */
 #journey{ position:relative; height: 500vh; z-index:4; }
